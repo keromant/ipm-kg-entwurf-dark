@@ -15,22 +15,22 @@
 
 @font-face {
   font-family: 'Playfair Display';
-  src: url('../assets/fonts/PlayfairDisplay.ttf') format('truetype');
+  src: url('assets/fonts/PlayfairDisplay.ttf') format('truetype');
   font-weight: 400 800; font-style: normal; font-display: swap;
 }
 @font-face {
   font-family: 'Playfair Display';
-  src: url('../assets/fonts/PlayfairDisplay-Italic.ttf') format('truetype');
+  src: url('assets/fonts/PlayfairDisplay-Italic.ttf') format('truetype');
   font-weight: 400 800; font-style: italic; font-display: swap;
 }
 @font-face {
   font-family: 'Avenir Web';
-  src: url('../assets/fonts/avenir-light.ttf') format('truetype');
+  src: url('assets/fonts/avenir-light.ttf') format('truetype');
   font-weight: 300; font-style: normal; font-display: swap;
 }
 @font-face {
   font-family: 'Montserrat';
-  src: url('../assets/fonts/Montserrat.ttf') format('truetype');
+  src: url('assets/fonts/Montserrat.ttf') format('truetype');
   font-weight: 300 700; font-style: normal; font-display: swap;
 }
 
@@ -309,8 +309,8 @@ a { color: inherit; text-decoration: none; }
    STAT-BAND (prominenter, heller Kontrast)
 ================================================================ */
 .stat-band {
-  background: #fff;
-  border-bottom: 1px solid rgba(0,0,0,.08);
+  background: var(--bg-2);
+  border-bottom: 1px solid var(--hairline);
 }
 .stat-grid {
   display: grid;
@@ -319,14 +319,14 @@ a { color: inherit; text-decoration: none; }
 }
 .stat-item {
   padding: 56px 44px;
-  border-right: 1px solid rgba(0,0,0,.08);
+  border-right: 1px solid var(--hairline);
 }
 .stat-item:last-child { border-right: none; }
 .stat-value {
   font-family: var(--font-serif);
   font-size: clamp(36px, 5vw, 68px);
   font-weight: 500; line-height: 1;
-  color: var(--ox);  /* Logo-Grün auf hellem BG */
+  color: var(--ox-lt);
   letter-spacing: -.02em;
 }
 .stat-value em { font-style: normal; font-size: .55em; vertical-align: super; margin-left: 2px; }
@@ -334,13 +334,13 @@ a { color: inherit; text-decoration: none; }
   font-family: var(--font-sans);
   font-size: 12px; font-weight: 300;
   letter-spacing: .18em; text-transform: uppercase;
-  color: #5a5a5a;
+  color: rgba(255,255,255,.38);
   margin-top: 12px;
 }
 .stat-footnote {
   font-family: var(--font-sans);
   font-size: 12px; font-weight: 300;
-  color: #888; margin-top: 8px;
+  color: rgba(255,255,255,.25); margin-top: 8px;
   font-style: italic;
 }
 
@@ -520,7 +520,7 @@ a { color: inherit; text-decoration: none; }
    INSIGHTS GRID (3-spaltig, heller Kontrast)
 ================================================================ */
 .insights-section {
-  background: var(--bg-light);
+  background: var(--bg-3);
   padding: 96px 80px;
 }
 .insights-header {
@@ -528,12 +528,12 @@ a { color: inherit; text-decoration: none; }
   margin-bottom: 48px;
   max-width: 1240px; margin-left: auto; margin-right: auto;
   padding-bottom: 22px;
-  border-bottom: 1px solid var(--hairline-d);
+  border-bottom: 1px solid var(--hairline);
 }
 .insights-title {
   font-family: var(--font-serif);
   font-size: clamp(22px, 2.8vw, 38px);
-  font-weight: 400; color: var(--text-dark);
+  font-weight: 400; color: var(--text);
 }
 .insights-more {
   font-family: var(--font-sans);
@@ -554,36 +554,37 @@ a { color: inherit; text-decoration: none; }
 .insight-card { cursor: none; }
 .insight-img {
   aspect-ratio: 16/9;
-  background: #D5D0C8;
+  background: #1a1a1a;
   overflow: hidden; position: relative;
   margin-bottom: 18px;
+  border: 1px solid var(--hairline);
 }
 .insight-img-ph {
   position: absolute; inset: 0;
   display: flex; align-items: center; justify-content: center;
   font-family: var(--font-sans);
   font-size: 9px; letter-spacing: .16em; text-transform: uppercase;
-  color: rgba(0,0,0,.15);
+  color: rgba(255,255,255,.1);
 }
 .insight-tag {
   font-family: var(--font-sans);
   font-size: 12px; font-weight: 300;
   letter-spacing: .16em; text-transform: uppercase;
-  color: var(--ox);  /* Logo-Grün */
+  color: var(--ox-lt);
   margin-bottom: 8px;
 }
 .insight-title {
   font-family: var(--font-serif);
   font-size: 17px; font-weight: 400;
-  color: var(--text-dark); line-height: 1.35;
+  color: var(--text); line-height: 1.35;
   margin-bottom: 10px;
   transition: color .25s ease;
 }
-.insight-card:hover .insight-title { color: var(--ox); }  /* Logo-Grün Hover */
+.insight-card:hover .insight-title { color: var(--ox-lt); }
 .insight-date {
   font-family: var(--font-sans);
   font-size: 12px; font-weight: 300;
-  color: #888;
+  color: rgba(255,255,255,.3);
 }
 
 /* ================================================================
@@ -738,7 +739,7 @@ footer {
 ================================================================ -->
 <nav class="topnav" id="topnav">
   <a href="#" class="nav-logo">
-    <img src="../assets/ipm-logo.png" alt="ipm — Immobilien-Projekt-Management">
+    <img src="assets/ipm-logo.png" alt="ipm — Immobilien-Projekt-Management">
   </a>
   <ul class="nav-links">
     <li><a href="#beratung">Beratung</a></li>
@@ -754,8 +755,8 @@ footer {
 <section class="hero" id="hero">
   <video
     class="hero-video"
-    src="../assets/hero-sebastian-henno.mp4"
-    poster="../assets/hero-endframe-poster.png"
+    src="assets/hero-sebastian-henno.mp4"
+    poster="assets/hero-endframe-poster.png"
     autoplay muted playsinline preload="auto">
   </video>
   <div class="hero-overlay"></div>
@@ -958,7 +959,7 @@ footer {
 <footer id="kontakt">
   <div class="footer-main">
     <div>
-      <img src="../assets/ipm-logo.png" alt="ipm" style="height:208px;width:auto;display:block;margin-bottom:14px;">
+      <img src="assets/ipm-logo.png" alt="ipm" style="height:208px;width:auto;display:block;margin-bottom:14px;">
       <p class="footer-tagline">Immobilien-Projekt-Management. Fachlich qualifiziert. Professionell. Unkompliziert.</p>
       <div class="footer-address">
         ipm Immobilien-Projekt-Management<br>
