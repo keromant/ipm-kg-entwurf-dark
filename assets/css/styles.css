@@ -126,15 +126,15 @@ section[id] { scroll-margin-top: calc(var(--header-h) + 16px); }
 .brand { display: flex; align-items: center; gap: var(--space-3); }
 .brand img { width: 46px; height: 46px; border-radius: 50%; }
 .brand .wordmark {
-  font-family: var(--font-script); font-size: 2rem; line-height: 1;
-  color: var(--color-navy-700); margin-top: 4px;
+  font-family: var(--font-script); font-size: 2rem; line-height: .9;
+  color: var(--color-navy-700); display: block;
 }
 .brand small {
   display: block; font-family: var(--font-accent); font-weight: 800;
   font-size: .58rem; letter-spacing: .16em; text-transform: uppercase;
-  color: var(--text-accent); margin-top: -2px;
+  color: var(--text-accent); margin-top: 5px;
 }
-.brand .brand-text { line-height: 1; }
+.brand .brand-text { display: flex; flex-direction: column; line-height: 1; }
 
 .nav { display: flex; align-items: center; gap: var(--space-2); }
 .nav-list { display: flex; align-items: center; gap: var(--space-1); list-style: none; padding: 0; }
