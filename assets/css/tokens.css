@@ -1,0 +1,210 @@
+/* ================================================================
+   JANA — HAUSWIRTSCHAFT & BETREUUNGSDIENST + REINIGUNGSSERVICE
+   DESIGN TOKENS · Drei-Schicht-Architektur: Primitive → Semantic → Component
+   Farben exakt aus jana-logo-transparent.png (Navy + Frisch-Grün)
+   Fonts: Great Vibes (Wortmarke) · Montserrat (Display) · Figtree (Body) · Nunito (Akzent)
+================================================================ */
+
+/* ================================================================
+   LAYER 1 — PRIMITIVE TOKENS
+================================================================ */
+:root {
+
+  /* --- Farben: Navy (Primär, aus Logo-Schrift/Haus) ----------- */
+  --color-navy-50:  #eef2f8;
+  --color-navy-100: #d6e0ee;
+  --color-navy-200: #adc0dc;
+  --color-navy-300: #7d97c1;
+  --color-navy-400: #4f6ea0;
+  --color-navy-500: #2b4a7d;
+  --color-navy-600: #1b3563;   /* Brand-Navy */
+  --color-navy-700: #13305c;   /* Kern aus Logo */
+  --color-navy-800: #0d2450;   /* Deep — Header/Footer */
+  --color-navy-900: #08183a;
+  --color-navy-950: #050f28;
+
+  /* --- Farben: Grün (Akzent, aus Logo-Herz/Blättern) ---------- */
+  --color-green-50:  #f2f8e9;
+  --color-green-100: #e2f0cd;
+  --color-green-200: #c8e2a2;
+  --color-green-300: #a9d071;
+  --color-green-400: #8ec250;   /* Logo-Grün hell */
+  --color-green-500: #7cb342;   /* Brand-Grün (Kern aus Logo) */
+  --color-green-600: #689a34;   /* Deep — Hover/aktiv */
+  --color-green-700: #527c29;
+  --color-green-800: #3d5c1f;
+  --color-green-900: #2a3f16;
+
+  /* --- Farben: Neutral / Off-White ---------------------------- */
+  --color-white:      #ffffff;
+  --color-offwhite:   #fafcfe;   /* Seiten-BG */
+  --color-neutral-50:  #f4f6fa;
+  --color-neutral-100: #eaeef4;
+  --color-neutral-200: #d9e0ea;
+  --color-neutral-300: #bcc6d6;
+  --color-neutral-400: #8e9bb0;
+  --color-neutral-500: #64748b;
+  --color-neutral-600: #47566c;
+  --color-neutral-700: #334052;
+  --color-neutral-800: #1f2a3d;
+  --color-neutral-900: #131c2b;
+
+  /* Navy als RGB-Tripel für Glows mit variabler Deckkraft */
+  --navy-rgb:  19, 48, 92;      /* #13305c */
+  --green-rgb: 124, 179, 66;    /* #7cb342 */
+
+  /* --- Typografie: Schriftfamilien ---------------------------- */
+  --font-script:  'Great Vibes', cursive;                 /* NUR Wortmarke „Jana" */
+  --font-display: 'Montserrat', system-ui, sans-serif;    /* Überschriften */
+  --font-body:    'Figtree', system-ui, sans-serif;       /* Fließtext */
+  --font-accent:  'Nunito', system-ui, sans-serif;        /* Buttons, Eyebrows, Tags */
+
+  /* --- Typografie: Scale (modular, ratio ~1.22) --------------- */
+  --text-xs:   0.78rem;    /* ~12.5px */
+  --text-sm:   0.9rem;     /* ~14px */
+  --text-base: 1.05rem;    /* ~17px — angehoben für Lesbarkeit (Senioren) */
+  --text-md:   1.2rem;     /* ~19px */
+  --text-lg:   1.4rem;     /* ~22px */
+  --text-xl:   1.7rem;     /* ~27px */
+  --text-2xl:  2.1rem;     /* ~34px */
+  --text-3xl:  2.6rem;     /* ~42px */
+  --text-4xl:  3.2rem;     /* ~51px */
+  --text-5xl:  4rem;       /* ~64px */
+
+  --leading-tight:  1.12;
+  --leading-snug:   1.3;
+  --leading-normal: 1.65;
+  --leading-loose:  1.85;
+
+  --tracking-tight:  -0.02em;
+  --tracking-normal:  0em;
+  --tracking-wide:    0.04em;
+  --tracking-wider:   0.1em;
+  --tracking-widest:  0.16em;
+
+  /* --- Spacing (4px base) ------------------------------------- */
+  --space-1:  0.25rem;
+  --space-2:  0.5rem;
+  --space-3:  0.75rem;
+  --space-4:  1rem;
+  --space-5:  1.25rem;
+  --space-6:  1.5rem;
+  --space-7:  1.85rem;
+  --space-8:  2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+
+  /* --- Border Radius ------------------------------------------ */
+  --radius-xs:   8px;
+  --radius-sm:   12px;
+  --radius-md:   18px;
+  --radius-lg:   24px;
+  --radius-xl:   32px;
+  --radius-2xl:  44px;
+  --radius-pill: 999px;
+  --radius-full: 9999px;
+
+  /* --- Shadows (neutral) -------------------------------------- */
+  --shadow-xs: 0 2px 8px -4px rgba(13,36,80,.16);
+  --shadow-sm: 0 10px 26px -18px rgba(13,36,80,.28);
+  --shadow-md: 0 20px 48px -26px rgba(13,36,80,.34);
+  --shadow-lg: 0 34px 80px -34px rgba(13,36,80,.42);
+
+  /* --- Signatur-Easings (aus KoSta / globaler Guideline) ------ */
+  --ease:      cubic-bezier(.22,.61,.36,1);        /* smooth decel */
+  --pop-ease:  cubic-bezier(.34,1.56,.64,1);       /* easeOutBack / feder */
+  --pop-lift:  translateY(-4px) scale(1.06);        /* Buttons UND Cards */
+
+  --transition-fast: 150ms var(--ease);
+  --transition-base: 250ms var(--ease);
+  --transition-slow: 400ms var(--ease);
+
+  /* --- Card-Glow (Spotlight): Standard weich → Hover kräftig --- */
+  /* Grün-Spotlight (warme Bereiche: Hauswirtschaft, Kita, Startseite) */
+  --glow-soft:   0 0 0 1px rgba(var(--green-rgb),.42),
+                 0 16px 34px -16px rgba(var(--green-rgb),.24),
+                 0 5px 14px rgba(var(--green-rgb),.12);
+  --glow-strong: 0 0 0 2px rgba(var(--green-rgb),.85),
+                 0 30px 55px -12px rgba(var(--green-rgb),.5),
+                 0 12px 26px rgba(var(--green-rgb),.28);
+  /* Navy-Spotlight (nüchterne B2B-Bereiche: Büro, Firma, Schule) */
+  --glow-soft-navy:   0 0 0 1px rgba(var(--navy-rgb),.28),
+                      0 16px 34px -18px rgba(var(--navy-rgb),.22),
+                      0 5px 14px rgba(var(--navy-rgb),.1);
+  --glow-strong-navy: 0 0 0 2px rgba(var(--navy-rgb),.65),
+                      0 30px 55px -14px rgba(var(--navy-rgb),.42),
+                      0 12px 26px rgba(var(--navy-rgb),.24);
+
+  /* --- Layout ------------------------------------------------- */
+  --maxw-content: 1180px;
+  --maxw-prose:   720px;
+  --maxw-narrow:  560px;
+  --header-h:     76px;
+}
+
+/* ================================================================
+   LAYER 2 — SEMANTIC TOKENS
+================================================================ */
+:root {
+  /* Hintergrund-Ebenen */
+  --bg-page:    var(--color-offwhite);
+  --bg-surface: var(--color-white);
+  --bg-sunken:  var(--color-neutral-50);
+  --bg-navy:    var(--color-navy-800);
+  --bg-overlay: rgba(8,24,58,.72);
+
+  /* Text */
+  --text-primary:   var(--color-navy-900);
+  --text-secondary: var(--color-neutral-600);
+  --text-muted:     var(--color-neutral-500);
+  --text-inverse:   var(--color-white);
+  --text-brand:     var(--color-navy-700);
+  --text-accent:    var(--color-green-700);   /* Grün nur groß/fett = WCAG AA */
+
+  /* Rahmen */
+  --border-subtle:  var(--color-neutral-200);
+  --border-default: var(--color-neutral-300);
+  --border-navy:    var(--color-navy-700);
+  --border-green:   var(--color-green-500);
+
+  /* Marke */
+  --brand:        var(--color-navy-700);
+  --brand-hover:  var(--color-navy-800);
+  --accent:       var(--color-green-500);
+  --accent-hover: var(--color-green-600);
+  --accent-tint:  var(--color-green-50);
+  --navy-tint:    var(--color-navy-50);
+
+  /* Fokus (Accessibility) */
+  --focus-ring: 0 0 0 3px rgba(var(--green-rgb),.55);
+}
+
+/* ================================================================
+   LAYER 3 — COMPONENT TOKENS
+================================================================ */
+:root {
+  /* Button-Sweep-Farben werden per Variante gesetzt (--sweep) */
+  --btn-radius: var(--radius-pill);
+
+  /* Card */
+  --card-bg:      var(--bg-surface);
+  --card-radius:  var(--radius-lg);
+  --card-padding: var(--space-8);
+
+  /* Header / Nav */
+  --nav-height: var(--header-h);
+
+  /* Section */
+  --section-py: var(--space-24);
+
+  /* Form */
+  --input-radius: var(--radius-sm);
+
+  /* Sticky Call */
+  --call-navy:  var(--color-navy-800);
+  --call-green: var(--color-green-500);
+}

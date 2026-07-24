@@ -1,1161 +1,265 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ipm — Immobilien-Projekt-Management</title>
-
-<style>
-/* ================================================================
-   ENTWURF B — FULL-BLEED INVESTOREN-LOOK
-   Akzent: ipm-Logo-Grün #38a038 | Nav: Transparent-Top → Sticky
-   Referenz: Blackstone/Hines/Tishman Speyer
-================================================================ */
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-@font-face {
-  font-family: 'Playfair Display';
-  src: url('assets/fonts/PlayfairDisplay.ttf') format('truetype');
-  font-weight: 400 800; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: 'Playfair Display';
-  src: url('assets/fonts/PlayfairDisplay-Italic.ttf') format('truetype');
-  font-weight: 400 800; font-style: italic; font-display: swap;
-}
-@font-face {
-  font-family: 'Avenir Web';
-  src: url('assets/fonts/avenir-light.ttf') format('truetype');
-  font-weight: 300; font-style: normal; font-display: swap;
-}
-@font-face {
-  font-family: 'Montserrat';
-  src: url('assets/fonts/Montserrat.ttf') format('truetype');
-  font-weight: 300 700; font-style: normal; font-display: swap;
-}
-
-:root {
-  --bg:        #0A0A0A;
-  --bg-2:      #060606;
-  --bg-3:      #0E0E0E;
-  --bg-light:  #F2EFE9;   /* warmes Off-White für Kontrast-Sektionen */
-  --text:      #FFFFFF;
-  --text-2:    #BDBDBD;
-  --text-dark: #1A1A1A;
-  --hairline:  rgba(255,255,255,.07);
-  --hairline-d:rgba(0,0,0,.1);
-  /* Akzent: ipm-Logo-Grün (entsättigt) — aus den 4 Logo-Quadranten */
-  --ox:        #2a7a2a;   /* Logo-Grün, gedämpft — für Flächen */
-  --ox-lt:     #38a038;   /* Logo-Grün exakt — für Text, Icons, Linien */
-  --ox-dim:    rgba(56,160,56,.12);
-  /* Logo-Nebenfarben (Quadranten) — sparsam nutzbar */
-  --logo-blue:   #1a6db5;
-  --logo-orange: #d97830;
-  --logo-red:    #b83228;
-  --font-serif:'Playfair Display', Georgia, serif;
-  --font-sans: 'Avenir Web','Montserrat',system-ui,sans-serif;
-  --ease-out:  cubic-bezier(.22,1,.36,1);
-  --nav-h:     68px;
-  /* Button design tokens (cards-and-buttons.md) */
-  --accent-rgb: 42,122,42;
-  --accent:     rgb(var(--accent-rgb));
-  --accent-strong: #1f5e1f;
-  --secondary:  #0a0a0a;
-  --pop-ease:   cubic-bezier(0.34, 1.56, 0.64, 1);
-  --pop-lift:   translateY(-4px) scale(1.06);
-  --glow-soft:  0 0 0 1px rgba(var(--accent-rgb),.45), 0 16px 34px -16px rgba(var(--accent-rgb),.26), 0 5px 14px rgba(var(--accent-rgb),.14);
-  --glow-strong:0 0 0 2px rgba(var(--accent-rgb),.85), 0 30px 55px -12px rgba(var(--accent-rgb),.52), 0 12px 26px rgba(var(--accent-rgb),.30);
-}
-
-html { scroll-behavior: smooth; }
-body {
-  font-family: var(--font-sans);
-  background: var(--bg);
-  color: var(--text);
-  overflow-x: hidden;
-  cursor: none;
-  -webkit-font-smoothing: antialiased;
-}
-img { display: block; max-width: 100%; }
-a { color: inherit; text-decoration: none; }
-
-/* ================================================================
-   CURSOR
-================================================================ */
-#cursor {
-  position: fixed; width: 36px; height: 36px;
-  border: 1.5px solid var(--ox-lt); border-radius: 50%;
-  pointer-events: none; z-index: 9999;
-  transform: translate(-50%,-50%);
-  transition: width .25s ease, height .25s ease, border-color .25s ease, background .25s ease;
-}
-#cursor.is-hover { width: 52px; height: 52px; background: rgba(56,160,56,.07); border-color: #4CAF50; }
-#cursor-dot {
-  position: fixed; width: 3px; height: 3px;
-  background: var(--ox-lt); border-radius: 50%;
-  pointer-events: none; z-index: 10000;
-  transform: translate(-50%,-50%);
-}
-
-/* ================================================================
-   TOP NAVIGATION (transparent → sticky on scroll)
-================================================================ */
-.topnav {
-  position: fixed; top: 0; left: 0; right: 0;
-  height: var(--nav-h);
-  display: flex; align-items: center;
-  z-index: 500;
-  padding: 0 52px;
-  overflow: visible;                        /* logo protrudes below the thin bar */
-  transition: background .4s ease, border-color .4s ease, backdrop-filter .4s ease;
-  background: transparent;
-  border-bottom: 1px solid transparent;
-}
-.topnav.is-scrolled {
-  background: rgba(5,5,5,.94);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-color: var(--hairline);
-}
-
-.nav-logo {
-  display: block;
-  flex-shrink: 0;
-  cursor: none;
-  align-self: flex-start;    /* stick to top of bar, protrude below */
-  transition: opacity .25s ease;
-}
-.nav-logo:hover { opacity: .82; }
-.nav-logo img {
-  height: 176px;
-  width: auto;
-  display: block;
-}
-
-.nav-links {
-  display: flex; align-items: center; justify-content: center;
-  list-style: none;
-  flex: 1;
-  gap: 36px;
-}
-.nav-links a {
-  font-family: 'Montserrat', system-ui, sans-serif;
-  font-size: 12px; font-weight: 400;
-  letter-spacing: .12em; text-transform: uppercase;
-  color: rgba(255,255,255,.65);
-  cursor: none;
-  transition: color .25s ease;
-  position: relative;
-  line-height: 1;
-}
-.nav-links a::after {
-  content: '';
-  position: absolute; left: 0; bottom: -3px;
-  width: 0; height: 1px;
-  background: var(--ox-lt);
-  transition: width .3s ease;
-}
-.nav-links a:hover { color: #fff; }
-.nav-links a:hover::after { width: 100%; }
-
-.nav-cta {
-  flex-shrink: 0;
-  font-family: 'Montserrat', system-ui, sans-serif;
-  font-size: 12px; font-weight: 400;
-  letter-spacing: .12em; text-transform: uppercase;
-  line-height: 1;
-  color: #fff;
-  padding: 9px 22px;
-  border: 1px solid rgba(56,160,56,.45);
-  cursor: none;
-  position: relative; z-index: 1; overflow: hidden; isolation: isolate;
-  transition: color .45s ease, border-color .4s ease;
-  --sweep: var(--ox);
-}
-.nav-cta::after {
-  content: ""; position: absolute; inset: 0 -20%; z-index: -1;
-  background: var(--sweep);
-  transform: skewX(-45deg) scale(0, 1); transform-origin: center;
-  transition: transform .5s ease;
-}
-.nav-cta:hover::after { transform: skewX(-45deg) scale(1, 1); }
-.nav-cta:hover { border-color: var(--ox-lt); }
-
-/* ================================================================
-   HERO — Full-Bleed Video (100vh)
-================================================================ */
-.hero {
-  height: 100vh; position: relative;
-  display: flex; flex-direction: column;
-  justify-content: flex-end;
-  overflow: hidden;
-}
-.hero-video {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  object-fit: cover;
-  transform: translate3d(0,0,0); will-change: transform;
-}
-.hero-overlay {
-  position: absolute; inset: 0;
-  background: linear-gradient(
-    to top,
-    rgba(0,0,0,.75) 0%,
-    rgba(0,0,0,.3)  50%,
-    rgba(0,0,0,.15) 100%
-  );
-  pointer-events: none;
-}
-
-.hero-content {
-  position: relative; z-index: 2;
-  padding: 0 80px 72px;
-  max-width: 900px;
-}
-.hero-eyebrow {
-  font-family: var(--font-sans);
-  font-size: 10px; font-weight: 300;
-  letter-spacing: .34em; text-transform: uppercase;
-  color: #4CAF50;
-  margin-bottom: 22px;
-  display: block;
-  opacity: 0;
-  animation: fadeUp .8s var(--ease-out) .4s forwards;
-}
-/* Statement in Kleinschreibung (Tishman-Stil) */
-.hero-statement {
-  font-family: var(--font-serif);
-  font-size: clamp(42px, 6.5vw, 96px);
-  font-weight: 400;
-  line-height: 1.06;
-  color: #fff;
-  letter-spacing: -.01em;
-  margin-bottom: 40px;
-  opacity: 0;
-  animation: fadeUp 1s var(--ease-out) .6s forwards;
-}
-/* Haarlinie-Divider unter Statement */
-.hero-rule {
-  width: 56px; height: 1px;
-  background: var(--ox-lt);
-  margin-bottom: 32px;
-  opacity: 0;
-  animation: ruleGrow .8s var(--ease-out) 1s forwards;
-}
-.hero-sub {
-  font-family: var(--font-sans);
-  font-size: 14px; font-weight: 300;
-  color: rgba(255,255,255,.6);
-  line-height: 1.7;
-  max-width: 480px;
-  margin-bottom: 40px;
-  opacity: 0;
-  animation: fadeUp .8s var(--ease-out) 1.1s forwards;
-}
-
-/* MAX 1 SOLID-CTA PRO SCREEN — sweep design */
-.btn-hero {
-  display: inline-flex; align-items: center; gap: 12px;
-  padding: 15px 32px;
-  background: var(--ox);
-  color: #fff;
-  font-family: var(--font-sans);
-  font-size: 11px; font-weight: 300;
-  letter-spacing: .18em; text-transform: uppercase;
-  cursor: none;
-  border: 0;
-  opacity: 0;
-  animation: fadeUp .8s var(--ease-out) 1.25s forwards;
-  position: relative; z-index: 1; overflow: hidden; isolation: isolate;
-  transition: color .45s ease;
-  --sweep: var(--secondary);
-}
-.btn-hero::after {
-  content: ""; position: absolute; inset: 0 -20%; z-index: -1;
-  background: var(--sweep);
-  transform: skewX(-45deg) scale(0, 1); transform-origin: center;
-  transition: transform .5s ease;
-}
-.btn-hero:hover::after { transform: skewX(-45deg) scale(1, 1); }
-.btn-hero.is-activating::after,
-.nav-cta.is-activating::after { animation: btn-sweep .5s ease forwards; }
-@keyframes btn-sweep {
-  from { transform: skewX(-45deg) scale(0,1); }
-  to   { transform: skewX(-45deg) scale(1,1); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .btn-hero, .nav-cta { transition: none; }
-  .btn-hero::after, .nav-cta::after { transition: none; animation: none; }
-}
-
-/* Scroll-Indikator rechts */
-.hero-scroll-ind {
-  position: absolute; right: 52px; bottom: 52px; z-index: 2;
-  display: flex; align-items: center; gap: 14px;
-  opacity: 0;
-  animation: fadeIn .8s ease 2s forwards;
-}
-.hero-scroll-line {
-  width: 32px; height: 1px;
-  background: rgba(255,255,255,.3);
-}
-.hero-scroll-label {
-  font-family: var(--font-sans);
-  font-size: 9px; letter-spacing: .28em; text-transform: uppercase;
-  color: rgba(255,255,255,.3);
-}
-
-/* ================================================================
-   STAT-BAND (prominenter, heller Kontrast)
-================================================================ */
-.stat-band {
-  background: var(--bg-2);
-  border-bottom: 1px solid var(--hairline);
-}
-.stat-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  max-width: 1100px; margin: 0 auto;
-}
-.stat-item {
-  padding: 56px 44px;
-  border-right: 1px solid var(--hairline);
-}
-.stat-item:last-child { border-right: none; }
-.stat-value {
-  font-family: var(--font-serif);
-  font-size: clamp(36px, 5vw, 68px);
-  font-weight: 500; line-height: 1;
-  color: var(--ox-lt);
-  letter-spacing: -.02em;
-}
-.stat-value em { font-style: normal; font-size: .55em; vertical-align: super; margin-left: 2px; }
-.stat-label {
-  font-family: var(--font-sans);
-  font-size: 12px; font-weight: 300;
-  letter-spacing: .18em; text-transform: uppercase;
-  color: rgba(255,255,255,.38);
-  margin-top: 12px;
-}
-.stat-footnote {
-  font-family: var(--font-sans);
-  font-size: 12px; font-weight: 300;
-  color: rgba(255,255,255,.25); margin-top: 8px;
-  font-style: italic;
-}
-
-/* ================================================================
-   STATEMENT 2-SPALTEN
-================================================================ */
-.statement-section {
-  padding: 120px 80px;
-  max-width: 1400px; margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 100px;
-  align-items: center;
-}
-.statement-left h2 {
-  font-family: var(--font-serif);
-  font-size: clamp(32px, 4.5vw, 64px);
-  font-weight: 400; line-height: 1.1;
-  color: var(--text);
-  letter-spacing: -.01em;
-}
-.statement-left h2 em {
-  font-style: italic; color: #4CAF50;
-}
-.statement-right { border-left: 1px solid var(--hairline); padding-left: 60px; }
-.statement-right p {
-  font-family: var(--font-sans);
-  font-size: 14px; font-weight: 300;
-  line-height: 1.9; color: var(--text-2);
-  margin-bottom: 22px;
-}
-.statement-right p strong { color: #fff; font-weight: 400; }
-.statement-sig {
-  font-family: var(--font-sans);
-  font-weight: 300; font-size: 14px; line-height: 1.9;
-  color: #fff;
-  text-shadow: 0 0 20px rgba(255,255,255,.35), 0 0 48px rgba(255,255,255,.15);
-  margin-top: 8px;
-}
-.text-link {
-  display: inline-flex; align-items: center; gap: 12px;
-  margin-top: 28px;
-  font-family: var(--font-sans);
-  font-size: 12px; font-weight: 400;
-  letter-spacing: .12em; text-transform: uppercase;
-  color: var(--ox-lt);
-  cursor: none;
-  transition: gap .3s ease;
-}
-.text-link:hover { gap: 18px; }
-.text-link-arrow {
-  font-family: var(--font-sans);
-  font-size: 20px; font-weight: 300;
-  line-height: 1;
-  transition: transform .3s ease;
-}
-.text-link:hover .text-link-arrow { transform: translateX(4px); }
-
-/* ================================================================
-   CASE STUDY CAROUSEL
-================================================================ */
-.case-study {
-  position: relative;
-  overflow: hidden;
-  background: var(--bg-2);
-}
-.case-track {
-  display: flex;
-  transition: transform .95s cubic-bezier(.22,1,.36,1);
-  will-change: transform;
-}
-.case-slide {
-  min-width: 100%; min-height: 520px;
-  position: relative;
-  display: flex; align-items: stretch;
-  overflow: hidden;
-}
-.case-slide-bg {
-  position: absolute; inset: 0;
-  background: var(--bg-2);
-}
-.case-slide-img {
-  flex: 0 0 60%;
-  position: relative;
-  background: #141414;
-  overflow: hidden;
-  border-right: 1px solid rgba(255,255,255,.05);
-}
-.case-slide-ph {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-sans);
-  font-size: 10px; letter-spacing: .2em; text-transform: uppercase;
-  color: rgba(255,255,255,.07);
-}
-.case-slide-content {
-  flex: 0 0 40%;
-  position: relative; z-index: 2;
-  text-align: right;
-  padding: 52px 56px;
-  display: flex; flex-direction: column; justify-content: center;
-}
-.case-tag {
-  font-family: var(--font-sans);
-  font-size: 11px; letter-spacing: .22em; text-transform: uppercase;
-  color: #4CAF50; margin-bottom: 20px; display: block;
-}
-.case-title {
-  font-family: var(--font-serif);
-  font-size: clamp(32px, 5vw, 68px);
-  font-weight: 400; line-height: 1.08;
-  color: #fff; letter-spacing: -.01em;
-  margin-bottom: 14px;
-}
-.case-meta {
-  font-family: var(--font-sans);
-  font-size: 13px; font-weight: 300;
-  letter-spacing: .14em; text-transform: uppercase;
-  color: rgba(255,255,255,.38); margin-bottom: 36px;
-}
-.case-divider {
-  width: 40px; height: 1px;
-  background: rgba(56,160,56,.45);
-  margin: 0 0 32px auto;
-}
-.case-stats {
-  display: flex; justify-content: flex-end; gap: 48px;
-}
-.btn-case {
-  display: inline-flex; align-items: center; gap: 10px;
-  padding: 11px 24px; margin-top: 36px;
-  align-self: flex-end;
-  border: 1px solid rgba(255,255,255,.2);
-  color: rgba(255,255,255,.5);
-  font-family: 'Montserrat', system-ui, sans-serif;
-  font-size: 10px; font-weight: 400;
-  letter-spacing: .2em; text-transform: uppercase;
-  text-decoration: none;
-  position: relative; z-index: 1; overflow: hidden; isolation: isolate;
-  transition: color .45s ease, border-color .4s ease;
-  --sweep: var(--ox);
-}
-.btn-case::after {
-  content: ""; position: absolute; inset: 0 -20%; z-index: -1;
-  background: var(--sweep);
-  transform: skewX(-45deg) scale(0,1); transform-origin: center;
-  transition: transform .5s ease;
-}
-.btn-case:hover::after { transform: skewX(-45deg) scale(1,1); }
-.btn-case:hover { color: #fff; border-color: var(--ox-lt); }
-.btn-case.is-activating::after { animation: btn-sweep .5s ease forwards; }
-.case-stat-value {
-  font-family: var(--font-serif);
-  font-size: 28px; font-weight: 400;
-  color: #4CAF50; line-height: 1.2;
-}
-.case-stat-label {
-  font-family: var(--font-sans);
-  font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
-  color: rgba(255,255,255,.35); margin-top: 8px;
-}
-/* Dot navigation */
-.case-dots {
-  position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%);
-  display: flex; gap: 12px; z-index: 10;
-}
-.case-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: rgba(255,255,255,.22);
-  border: none; cursor: none; padding: 0;
-  transition: background .4s ease, transform .4s var(--pop-ease);
-}
-.case-dot.is-active { background: #4CAF50; transform: scale(1.5); }
-.case-dot:hover { background: rgba(255,255,255,.5); }
-
-/* ================================================================
-   INSIGHTS GRID (3-spaltig, heller Kontrast)
-================================================================ */
-.insights-section {
-  background: var(--bg-3);
-  padding: 96px 80px;
-}
-.insights-header {
-  display: flex; justify-content: space-between; align-items: baseline;
-  margin-bottom: 48px;
-  max-width: 1240px; margin-left: auto; margin-right: auto;
-  padding-bottom: 22px;
-  border-bottom: 1px solid var(--hairline);
-}
-.insights-title {
-  font-family: var(--font-serif);
-  font-size: clamp(22px, 2.8vw, 38px);
-  font-weight: 400; color: var(--text);
-}
-.insights-more {
-  font-family: var(--font-sans);
-  font-size: 13px; font-weight: 400;
-  letter-spacing: .08em; text-transform: uppercase;
-  color: var(--ox);
-  cursor: none;
-  transition: color .25s ease;
-}
-.insights-more:hover { color: #1a5c1a; }
-
-.insights-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 32px;
-  max-width: 1240px; margin: 0 auto;
-}
-.insight-card { cursor: none; }
-.insight-img {
-  aspect-ratio: 16/9;
-  background: #1a1a1a;
-  overflow: hidden; position: relative;
-  margin-bottom: 18px;
-  border: 1px solid var(--hairline);
-}
-.insight-img-ph {
-  position: absolute; inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-sans);
-  font-size: 9px; letter-spacing: .16em; text-transform: uppercase;
-  color: rgba(255,255,255,.1);
-}
-.insight-tag {
-  font-family: var(--font-sans);
-  font-size: 12px; font-weight: 300;
-  letter-spacing: .16em; text-transform: uppercase;
-  color: var(--ox-lt);
-  margin-bottom: 8px;
-}
-.insight-title {
-  font-family: var(--font-serif);
-  font-size: 17px; font-weight: 400;
-  color: var(--text); line-height: 1.35;
-  margin-bottom: 10px;
-  transition: color .25s ease;
-}
-.insight-card:hover .insight-title { color: var(--ox-lt); }
-.insight-date {
-  font-family: var(--font-sans);
-  font-size: 12px; font-weight: 300;
-  color: rgba(255,255,255,.3);
-}
-
-/* ================================================================
-   LEGAL FOOTER (volle Adresse, 4-spaltig)
-================================================================ */
-footer {
-  background: var(--bg-2);
-  border-top: 1px solid var(--hairline);
-}
-.footer-main {
-  display: grid;
-  grid-template-columns: 1.6fr 1fr 1fr 1fr;
-  gap: 52px;
-  max-width: 1400px; margin: 0 auto;
-  padding: 72px 80px 52px;
-}
-.footer-wordmark {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 22px; color: #fff;
-  margin-bottom: 10px;
-}
-.footer-wordmark span { color: var(--ox-lt); }
-.footer-tagline {
-  font-family: var(--font-sans);
-  font-size: 11px; font-weight: 300;
-  color: rgba(255,255,255,.28);
-  line-height: 1.65;
-  max-width: 230px;
-  margin-bottom: 24px;
-}
-.footer-address {
-  font-family: var(--font-sans);
-  font-size: 11px; font-weight: 300;
-  color: rgba(255,255,255,.35);
-  line-height: 1.75;
-}
-
-.footer-col h4 {
-  font-family: var(--font-sans);
-  font-size: 9px; font-weight: 300;
-  letter-spacing: .28em; text-transform: uppercase;
-  color: rgba(56,160,56,.6);
-  margin-bottom: 16px;
-}
-.footer-col ul { list-style: none; }
-.footer-col ul li + li { margin-top: 10px; }
-.footer-col ul a {
-  font-family: var(--font-sans);
-  font-size: 12px; font-weight: 300;
-  color: rgba(255,255,255,.32);
-  cursor: none;
-  transition: color .25s ease;
-}
-.footer-col ul a:hover { color: rgba(255,255,255,.7); }
-
-.footer-bottom {
-  border-top: 1px solid var(--hairline);
-  max-width: 1400px; margin: 0 auto;
-  padding: 20px 80px;
-  display: flex; justify-content: space-between; align-items: center;
-  flex-wrap: wrap; gap: 12px;
-}
-.footer-copy {
-  font-family: var(--font-sans);
-  font-size: 10px; font-weight: 300;
-  letter-spacing: .06em;
-  color: rgba(255,255,255,.18);
-}
-.footer-legal-links { display: flex; gap: 28px; }
-.footer-legal-links a {
-  font-family: var(--font-sans);
-  font-size: 10px; font-weight: 300;
-  letter-spacing: .1em; text-transform: uppercase;
-  color: rgba(255,255,255,.18);
-  cursor: none;
-  transition: color .25s ease;
-}
-.footer-legal-links a:hover { color: rgba(255,255,255,.5); }
-.footer-disclaimer {
-  max-width: 1400px; margin: 0 auto;
-  padding: 0 80px 28px;
-  font-family: var(--font-sans);
-  font-size: 10px; font-weight: 300;
-  line-height: 1.6;
-  color: rgba(255,255,255,.14);
-}
-
-/* ================================================================
-   ANIMATIONEN & REVEAL
-================================================================ */
-@keyframes fadeUp {
-  from { opacity:0; transform:translateY(28px); filter:blur(4px); }
-  to   { opacity:1; transform:translateY(0);    filter:blur(0); }
-}
-@keyframes fadeIn {
-  from { opacity:0; filter:blur(2px); }
-  to   { opacity:1; filter:blur(0); }
-}
-@keyframes ruleGrow {
-  from { width:0; opacity:0; } to { width:56px; opacity:1; }
-}
-
-.reveal {
-  opacity: 0;
-  transform: translateY(36px);
-  filter: blur(6px);
-  transition:
-    opacity  1.1s cubic-bezier(.22,1,.36,1),
-    transform 1.1s cubic-bezier(.22,1,.36,1),
-    filter   1s   cubic-bezier(.22,1,.36,1);
-}
-.reveal.in {
-  opacity: 1;
-  transform: translateY(0);
-  filter: blur(0);
-}
-
-/* ================================================================
-   RESPONSIVE
-================================================================ */
-@media (max-width: 960px) {
-  .nav-links, .nav-cta { display: none !important; }
-  .hero-content { padding: 0 32px 52px; }
-  .statement-section { grid-template-columns: 1fr; padding: 64px 32px; gap: 48px; }
-  .statement-right { border-left: none; padding-left: 0; border-top: 1px solid var(--hairline); padding-top: 32px; }
-  .stat-grid { grid-template-columns: repeat(1,1fr); }
-  .case-study-content { grid-template-columns: 1fr; padding: 0 32px 48px; }
-  .insights-section { padding: 64px 32px; }
-  .insights-grid { grid-template-columns: 1fr; }
-  .footer-main { grid-template-columns: 1fr; padding: 52px 32px; }
-  .footer-bottom, .footer-disclaimer { padding-left: 32px; padding-right: 32px; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reveal { transition: none; filter: none; }
-  .reveal.in { transform: none; filter: none; }
-  .btn-hero, .nav-cta { transition: none; }
-  .btn-hero::after, .nav-cta::after { transition: none; animation: none; }
-  * { animation-duration: .01ms !important; }
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- TODO SEO: Region ergänzen, z. B. „… in [Region]" -->
+  <title>Jana – Hauswirtschaft, Betreuungsdienst & Reinigungsservice</title>
+  <meta name="description" content="Jana: Hauswirtschaft & Betreuungsdienst für Privathaushalte und professioneller Reinigungsservice für Schulen, Kitas, Büros & Firmen. Mit Herz. Zuverlässig. Persönlich. ☎ 0173 6171063" />
+  <link rel="icon" href="/assets/img/jana-logo-transparent.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="/assets/css/tokens.css" />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
 </head>
 <body>
 
-<!-- CURSOR -->
-<div id="cursor"></div>
-<div id="cursor-dot"></div>
-
-<!-- ================================================================
-     TOP NAVIGATION (transparent → sticky)
-================================================================ -->
-<nav class="topnav" id="topnav">
-  <a href="#" class="nav-logo">
-    <img src="assets/ipm-logo.png" alt="ipm — Immobilien-Projekt-Management">
-  </a>
-  <ul class="nav-links">
-    <li><a href="#beratung">Beratung</a></li>
-    <li><a href="#projekte">Projekte</a></li>
-    <li><a href="#insights">Aktuelles</a></li>
-  </ul>
-  <a href="#kontakt" class="nav-cta">Kontakt</a>
-</nav>
-
-<!-- ================================================================
-     HERO — Full-Bleed Video (100vh)
-================================================================ -->
-<section class="hero" id="hero">
-  <video
-    class="hero-video"
-    src="assets/hero-sebastian-henno.mp4"
-    poster="assets/hero-endframe-poster.png"
-    autoplay muted playsinline preload="auto">
-  </video>
-  <div class="hero-overlay"></div>
-
-  <div class="hero-content">
-    <span class="hero-eyebrow">Immobilien-Projekt-Management · Seit 2003</span>
-    <!-- Statement in Kleinschreibung (Tishman-Stil) -->
-    <h1 class="hero-statement">
-      erfahrung.<br>vertrauen.<br>werte.
-    </h1>
-    <div class="hero-rule"></div>
-    <p class="hero-sub">Fachlich qualifiziert. Professionell. Unkompliziert. — Beratung für Bauherren, Investoren und Projektentwickler auf Empfehlung.</p>
-    <a href="#kontakt" class="btn-hero">Beratung anfragen →</a>
-  </div>
-
-  <div class="hero-scroll-ind">
-    <div class="hero-scroll-line"></div>
-    <span class="hero-scroll-label">Scrollen</span>
-  </div>
-</section>
-
-<!-- ================================================================
-     STAT-BAND (hell, prominenter Kontrast zu dunklem Hero)
-================================================================ -->
-<section class="stat-band" id="kennzahlen">
-  <div class="stat-grid">
-    <div class="stat-item reveal">
-      <div class="stat-value" id="stat-year" data-start="2026" data-end="2003">2003</div>
-      <div class="stat-label">Am Markt seit</div>
-      <div class="stat-footnote">Nur auf Empfehlung tätig</div>
-    </div>
-    <div class="stat-item reveal">
-      <div class="stat-value">[XX]</div>
-      <div class="stat-label">Projekte realisiert</div>
-      <div class="stat-footnote">Stand: [Datum] — vorläufig, mit Henno bestätigen</div>
-    </div>
-    <div class="stat-item reveal">
-      <div class="stat-value">[XX.XXX]<em>m²</em></div>
-      <div class="stat-label">Betreute Fläche</div>
-      <div class="stat-footnote">Stand: [Datum] — vorläufig, mit Henno bestätigen</div>
-    </div>
-  </div>
-</section>
-
-<!-- ================================================================
-     STATEMENT 2-SPALTEN
-================================================================ -->
-<section id="beratung">
-  <div class="statement-section reveal">
-    <div class="statement-left">
-      <h2>
-        Bau-Beratung,<br>die <em>zählt</em>.
-      </h2>
-    </div>
-    <div class="statement-right">
-      <p>
-        Jeder, der sich mit einem Bau-Projekt oder Bauvorhaben beschäftigt, ob privat oder gewerblich, erhält von der <strong>ipm</strong> fachlich qualifizierte, professionelle und vor allem unkomplizierte Beratungen — in jeder Phase des Bauvorhabens.
-      </p>
-      <p>
-        Die ipm sucht mit Ihnen nach Optimierungen des Konzeptes, der Vorplanung, berät von der Planung, über die Vergabe und Ausführung, bis hin zur Abnahme und Fertigstellung.
-      </p>
-      <p>
-        Hinzu kommen wertvolle Tipps, Anregungen und Ratschläge, die zum Gelingen des Bauvorhabens beitragen.
-      </p>
-      <p class="statement-sig">
-        Die BAU-BERATUNG der ipm ist grundsätzlich vor, während und nach einem Bauvorhaben <strong>kostenlos und unverbindlich</strong> und kann beliebig oft in Anspruch genommen werden.
-      </p>
-      <a href="#kontakt" class="text-link">
-        <span class="text-link-arrow">+</span>
-        Jetzt beraten lassen
+  <!-- ================= HEADER ================= -->
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="Jana – Startseite">
+        <img src="/assets/img/jana-logo-transparent.png" alt="Jana Logo" width="46" height="46" />
+        <span class="brand-text">
+          <span class="wordmark">Jana</span>
+          <small>Hauswirtschaft &amp; Reinigung</small>
+        </span>
       </a>
-    </div>
-  </div>
-</section>
 
-<!-- ================================================================
-     CASE STUDY CAROUSEL
-================================================================ -->
-<section class="case-study" id="projekte">
-  <div class="case-track" id="caseTrack">
+      <nav class="nav" id="nav" aria-label="Hauptnavigation">
+        <ul class="nav-list">
+          <li><a href="/hauswirtschaft/">Hauswirtschaft</a></li>
+          <li class="has-sub">
+            <a href="/reinigung/">Reinigung</a>
+            <ul class="sub">
+              <li><a href="/reinigung/schulreinigung/">Schulreinigung</a></li>
+              <li><a href="/reinigung/kindergartenreinigung/">Kindergartenreinigung</a></li>
+              <li><a href="/reinigung/bueroreinigung/">Büroreinigung</a></li>
+              <li><a href="/reinigung/firmenreinigung/">Firmenreinigung</a></li>
+            </ul>
+          </li>
+          <li><a href="/ueber-uns/">Über uns</a></li>
+          <li><a href="/kontakt/">Kontakt</a></li>
+        </ul>
+      </nav>
 
-    <!-- Slide 1 -->
-    <div class="case-slide">
-      <div class="case-slide-bg"></div>
-      <div class="case-slide-img">
-        <div class="case-slide-ph">Objektfoto — Kassel</div>
-      </div>
-      <div class="case-slide-content">
-        <span class="case-tag">Referenzprojekt · Wohnbau</span>
-        <h2 class="case-title">PROJEKT NAME,<br>KASSEL</h2>
-        <div class="case-meta">Wohnbau · [Jahr] · [m²]</div>
-        <div class="case-divider"></div>
-        <div class="case-stats">
-          <div>
-            <div class="case-stat-value">[XX] Monate</div>
-            <div class="case-stat-label">Realisierungsdauer</div>
-          </div>
-          <div>
-            <div class="case-stat-value">[X.XXX] m²</div>
-            <div class="case-stat-label">Realisierte Fläche</div>
-          </div>
-        </div>
-        <a href="#" class="btn-case">Zum Projekt +</a>
+      <div class="header-cta">
+        <a class="header-phone" href="tel:+4901736171063" aria-label="Jetzt anrufen 0173 6171063">
+          <span class="ico" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </span>
+          0173 6171063
+        </a>
+        <a class="btn btn-accent" href="/kontakt/">Angebot anfordern</a>
+        <button class="nav-toggle" aria-label="Menü öffnen" aria-controls="nav" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
       </div>
     </div>
+  </header>
 
-    <!-- Slide 2 -->
-    <div class="case-slide">
-      <div class="case-slide-bg"></div>
-      <div class="case-slide-img">
-        <div class="case-slide-ph">Objektfoto — Hannover</div>
-      </div>
-      <div class="case-slide-content">
-        <span class="case-tag">Referenzprojekt · Gewerbebau</span>
-        <h2 class="case-title">PROJEKT NAME,<br>HANNOVER</h2>
-        <div class="case-meta">Gewerbebau · [Jahr] · [m²]</div>
-        <div class="case-divider"></div>
-        <div class="case-stats">
-          <div>
-            <div class="case-stat-value">[XX] Monate</div>
-            <div class="case-stat-label">Realisierungsdauer</div>
-          </div>
-          <div>
-            <div class="case-stat-value">[X.XXX] m²</div>
-            <div class="case-stat-label">Realisierte Fläche</div>
+  <!-- ScrollSmoother-Wrapper (fixierter Header + Sticky-Call bleiben außerhalb) -->
+  <div id="smooth-wrapper">
+  <div id="smooth-content">
+
+  <main>
+    <!-- ================= HERO ================= -->
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="reveal">
+          <span class="hero-badge">
+            <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" style="color:var(--color-green-500)"><path d="M12 21s-7.5-4.6-10-9.2C.4 8.8 2 5.5 5.2 5.5c1.9 0 3.2 1 3.8 2.2.6-1.2 1.9-2.2 3.8-2.2 3.2 0 4.8 3.3 3.2 6.3C19.5 16.4 12 21 12 21z"/></svg>
+            Mit Herz. Für Sie da – jeden Tag.
+          </span>
+          <h1>Hilfe im Haushalt und <span class="hero-script">saubere</span> Räume – aus einer Hand.</h1>
+          <p class="lead">Warme, zuverlässige Unterstützung für Privathaushalte und professionelle Reinigung für Schulen, Kitas, Büros und Firmen. Persönlich. Vertrauensvoll. Mit Respekt.</p>
+          <div class="hero-actions">
+            <a class="btn btn-primary btn-lg" href="/hauswirtschaft/">Für Privathaushalte <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+            <a class="btn btn-ghost btn-lg" href="/reinigung/">Für Unternehmen &amp; Einrichtungen</a>
           </div>
         </div>
-        <a href="#" class="btn-case">Zum Projekt +</a>
-      </div>
-    </div>
-
-    <!-- Slide 3 -->
-    <div class="case-slide">
-      <div class="case-slide-bg"></div>
-      <div class="case-slide-img">
-        <div class="case-slide-ph">Objektfoto — Göttingen</div>
-      </div>
-      <div class="case-slide-content">
-        <span class="case-tag">Referenzprojekt · Projektentwicklung</span>
-        <h2 class="case-title">PROJEKT NAME,<br>GÖTTINGEN</h2>
-        <div class="case-meta">Projektentwicklung · [Jahr] · [m²]</div>
-        <div class="case-divider"></div>
-        <div class="case-stats">
-          <div>
-            <div class="case-stat-value">[XX] Monate</div>
-            <div class="case-stat-label">Realisierungsdauer</div>
-          </div>
-          <div>
-            <div class="case-stat-value">[X.XXX] m²</div>
-            <div class="case-stat-label">Realisierte Fläche</div>
+        <div class="hero-visual reveal" data-delay="1">
+          <div class="hero-logo-ring">
+            <img src="/assets/img/jana-logo-transparent.png" alt="Jana – Hauswirtschaft, Betreuungsdienst & Reinigungsservice" />
           </div>
         </div>
-        <a href="#" class="btn-case">Zum Projekt +</a>
+      </div>
+    </section>
+
+    <!-- ================= ZWEI EINSTIEGE ================= -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head center">
+          <span class="eyebrow">Zwei Bereiche · eine Marke</span>
+          <h2>Wofür brauchen Sie Unterstützung?</h2>
+          <p>Wählen Sie Ihren Bereich – wir sind für private Haushalte ebenso da wie für Einrichtungen und Unternehmen.</p>
+        </div>
+        <div class="split-entries">
+          <article class="card entry-card reveal">
+            <span class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M12 21v-6h0"/></svg>
+            </span>
+            <span class="tag">Für Privathaushalte</span>
+            <h3>Hauswirtschaft &amp; Betreuungsdienst</h3>
+            <p>Einkaufen, Haushalt, Begleitung und Alltagsunterstützung – liebevoll und verlässlich, besonders für Seniorinnen, Senioren und ihre Angehörigen.</p>
+            <a class="btn btn-accent card-cta" href="/hauswirtschaft/">Mehr erfahren <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </article>
+
+          <article class="card entry-card navy reveal" data-delay="1">
+            <span class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 9h0M9 13h0M9 17h0M15 9h0M15 13h0M15 17h0"/></svg>
+            </span>
+            <span class="tag" style="color:var(--color-navy-700);background:var(--navy-tint)">Für Unternehmen &amp; Einrichtungen</span>
+            <h3>Professioneller Reinigungsservice</h3>
+            <p>Zuverlässige Unterhalts- und Sonderreinigung für Schulen, Kindergärten, Büros und Firmen – mit geprüftem Personal, festen Ansprechpartnern und flexiblen Vertragsmodellen.</p>
+            <a class="btn btn-primary card-cta" href="/reinigung/">Reinigung ansehen <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= VERTRAUEN (drei Logo-Werte) ================= -->
+    <section class="section bg-sunken">
+      <div class="container">
+        <div class="section-head center">
+          <span class="eyebrow navy">Unser Versprechen</span>
+          <h2>Werte, auf die Sie sich verlassen können</h2>
+        </div>
+        <div class="trust">
+          <div class="trust-item reveal">
+            <div class="t-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7.5-4.6-10-9.2C.4 8.8 2 5.5 5.2 5.5c1.9 0 3.2 1 3.8 2.2.6-1.2 1.9-2.2 3.8-2.2 3.2 0 4.8 3.3 3.2 6.3C19.5 16.4 12 21 12 21z"/></svg></div>
+            <strong>Mit Herz.</strong>
+            <span>Für Sie da.</span>
+          </div>
+          <div class="trust-item reveal" data-delay="1">
+            <div class="t-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></div>
+            <strong>Zuverlässig.</strong>
+            <span>Vertrauensvoll.</span>
+          </div>
+          <div class="trust-item reveal" data-delay="2">
+            <div class="t-ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+            <strong>Persönlich.</strong>
+            <span>Mit Respekt.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= REINIGUNGS-BEREICHE ================= -->
+    <section class="section">
+      <div class="container">
+        <div class="section-head center">
+          <span class="eyebrow navy">Reinigungsservice</span>
+          <h2>Für jede Einrichtung die passende Reinigung</h2>
+          <p>Vier Fachbereiche – jeweils auf die Anforderungen und Hygienestandards Ihrer Branche zugeschnitten.</p>
+        </div>
+        <div class="grid grid-4">
+          <article class="card navy reveal">
+            <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="m4 6 8-3 8 3-8 3-8-3z"/><path d="M4 6v6c0 2 4 4 8 4s8-2 8-4V6"/><path d="M20 9v5"/></svg></span>
+            <h3>Schulreinigung</h3>
+            <p>Hygienisch saubere Klassen &amp; Sanitärbereiche – außerhalb der Unterrichtszeiten.</p>
+            <span class="more">Mehr <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <a href="/reinigung/schulreinigung/" style="position:absolute;inset:0" aria-label="Zur Schulreinigung"></a>
+          </article>
+          <article class="card navy reveal" data-delay="1">
+            <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3"/><path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/></svg></span>
+            <h3>Kindergartenreinigung</h3>
+            <p>Kindersichere Mittel, geprüftes Personal – Sauberkeit für die Kleinsten.</p>
+            <span class="more">Mehr <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <a href="/reinigung/kindergartenreinigung/" style="position:absolute;inset:0" aria-label="Zur Kindergartenreinigung"></a>
+          </article>
+          <article class="card navy reveal" data-delay="2">
+            <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="1.5"/><path d="M9 7h0M9 11h0M9 15h0M15 7h0M15 11h0M15 15h0"/></svg></span>
+            <h3>Büroreinigung</h3>
+            <p>Diskrete, flexible Unterhaltsreinigung mit festem Ansprechpartner.</p>
+            <span class="more">Mehr <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <a href="/reinigung/bueroreinigung/" style="position:absolute;inset:0" aria-label="Zur Büroreinigung"></a>
+          </article>
+          <article class="card navy reveal" data-delay="3">
+            <span class="card-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M6 21V8l6-4 6 4v13"/><path d="M10 12h4M10 16h4"/></svg></span>
+            <h3>Firmenreinigung</h3>
+            <p>Individuelle Vertragsmodelle für Gewerbe, Praxen &amp; Produktion.</p>
+            <span class="more">Mehr <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>
+            <a href="/reinigung/firmenreinigung/" style="position:absolute;inset:0" aria-label="Zur Firmenreinigung"></a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CTA-BAND ================= -->
+    <section class="section">
+      <div class="container">
+        <div class="cta-band reveal">
+          <span class="eyebrow" style="background:rgba(255,255,255,.12);color:var(--color-green-400)">Sprechen wir persönlich</span>
+          <h2>Rufen Sie uns an – wir hören zu.</h2>
+          <p>Ob Unterstützung im Alltag oder ein Reinigungsangebot für Ihre Einrichtung: Am schnellsten geht es telefonisch. Für Unternehmen erstellen wir Ihr Angebot innerhalb von 24&nbsp;Stunden.</p>
+          <div class="hero-actions">
+            <a class="cta-phone" href="tel:+4901736171063">
+              <span class="ico" style="width:44px;height:44px;border-radius:50%;background:var(--color-green-500);display:grid;place-items:center" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="22" height="22"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+              0173 6171063
+            </a>
+            <a class="btn btn-accent" href="/kontakt/">Nachricht schreiben</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= FOOTER ================= -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <span class="wordmark">Jana</span>
+          <p style="margin-top:8px">Hauswirtschaft &amp; Betreuungsdienst · Reinigungsservice.<br />Mit Herz. Zuverlässig. Persönlich.</p>
+          <p style="margin-top:12px"><a href="tel:+4901736171063" style="color:#fff;font-weight:700">☎ 0173 6171063</a></p>
+        </div>
+        <div>
+          <h5>Privatkunden</h5>
+          <ul>
+            <li><a href="/hauswirtschaft/">Hauswirtschaft</a></li>
+            <li><a href="/hauswirtschaft/">Betreuungsdienst</a></li>
+            <li><a href="/kontakt/">Kontakt</a></li>
+          </ul>
+        </div>
+        <div>
+          <h5>Reinigung (B2B)</h5>
+          <ul>
+            <li><a href="/reinigung/schulreinigung/">Schulreinigung</a></li>
+            <li><a href="/reinigung/kindergartenreinigung/">Kindergartenreinigung</a></li>
+            <li><a href="/reinigung/bueroreinigung/">Büroreinigung</a></li>
+            <li><a href="/reinigung/firmenreinigung/">Firmenreinigung</a></li>
+          </ul>
+        </div>
+        <div>
+          <h5>Unternehmen</h5>
+          <ul>
+            <li><a href="/ueber-uns/">Über uns</a></li>
+            <li><a href="/kontakt/">Angebot anfordern</a></li>
+            <li><a href="/impressum/">Impressum</a></li>
+            <li><a href="/datenschutz/">Datenschutz</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© <span data-year>2026</span> Jana – Hauswirtschaft &amp; Reinigung. Alle Rechte vorbehalten.</span>
+        <span><a href="/impressum/">Impressum</a> · <a href="/datenschutz/">Datenschutz</a></span>
       </div>
     </div>
+  </footer>
 
-  </div>
+  </div><!-- /#smooth-content -->
+  </div><!-- /#smooth-wrapper -->
 
-  <!-- Dot navigation -->
-  <div class="case-dots" id="caseDots">
-    <button class="case-dot is-active" data-idx="0"></button>
-    <button class="case-dot" data-idx="1"></button>
-    <button class="case-dot" data-idx="2"></button>
-  </div>
-</section>
+  <!-- ================= STICKY CALL (mobil) ================= -->
+  <a class="sticky-call" href="tel:+4901736171063">
+    <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span>
+    <span><small>Jetzt anrufen</small>0173 6171063</span>
+  </a>
 
-<!-- ================================================================
-     INSIGHTS / AKTUELLES (3-spaltig, heller BG)
-================================================================ -->
-<section class="insights-section" id="insights">
-  <div class="insights-header reveal">
-    <h2 class="insights-title">Aktuelles + Einblicke</h2>
-    <a href="#" class="insights-more">Alle ansehen +</a>
-  </div>
-  <div class="insights-grid">
-    <a class="insight-card reveal" href="#">
-      <div class="insight-img"><div class="insight-img-ph">Beitragsbild eintragen</div></div>
-      <div class="insight-tag">Markteinblick</div>
-      <h3 class="insight-title">Warum sorgfältige Vorplanung Kosten spart — und Nerven</h3>
-      <div class="insight-date">[Datum eintragen]</div>
-    </a>
-    <a class="insight-card reveal" href="#">
-      <div class="insight-img"><div class="insight-img-ph">Beitragsbild eintragen</div></div>
-      <div class="insight-tag">Projektsteuerung</div>
-      <h3 class="insight-title">Vergabe ohne Überraschungen: Wie ipm Ausschreibungen begleitet</h3>
-      <div class="insight-date">[Datum eintragen]</div>
-    </a>
-    <a class="insight-card reveal" href="#">
-      <div class="insight-img"><div class="insight-img-ph">Beitragsbild eintragen</div></div>
-      <div class="insight-tag">Erfahrungsbericht</div>
-      <h3 class="insight-title">Baureinigung als letzter Schritt: Was eine saubere Übergabe bedeutet</h3>
-      <div class="insight-date">[Datum eintragen]</div>
-    </a>
-  </div>
-</section>
-
-<!-- ================================================================
-     LEGAL FOOTER (volle Adresse, 4-spaltig)
-================================================================ -->
-<footer id="kontakt">
-  <div class="footer-main">
-    <div>
-      <img src="assets/ipm-logo.png" alt="ipm" style="height:208px;width:auto;display:block;margin-bottom:14px;">
-      <p class="footer-tagline">Immobilien-Projekt-Management. Fachlich qualifiziert. Professionell. Unkompliziert.</p>
-      <div class="footer-address">
-        ipm Immobilien-Projekt-Management<br>
-        [ADRESSE EINTRAGEN]<br>
-        [PLZ ORT]<br><br>
-        Tel. [TEL EINTRAGEN]<br>
-        [EMAIL EINTRAGEN]
-      </div>
-    </div>
-    <div class="footer-col">
-      <h4>Leistungen</h4>
-      <ul>
-        <li><a href="#beratung">BAU-BERATUNG</a></li>
-        <li><a href="#beratung">Projektsteuerung</a></li>
-        <li><a href="#beratung">Vergabe & Ausführung</a></li>
-        <li><a href="#beratung">Kostenkontrolle</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Referenzen</h4>
-      <ul>
-        <li><a href="#projekte">Projekt Name, Kassel</a></li>
-        <li><a href="#projekte">Projekt Name, Hannover</a></li>
-        <li><a href="#projekte">Projekt Name, Göttingen</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Rechtliches</h4>
-      <ul>
-        <li><a href="#">Impressum</a></li>
-        <li><a href="#">Datenschutzerklärung</a></li>
-        <li><a href="#">Cookie-Einstellungen</a></li>
-        <li><a href="#">Nutzungsbedingungen</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <span class="footer-copy">© 2025 ipm Immobilien-Projekt-Management · [ORT] · Alle Rechte vorbehalten.</span>
-    <div class="footer-legal-links">
-      <a href="#">Impressum</a>
-      <a href="#">Datenschutz</a>
-    </div>
-  </div>
-  <div class="footer-disclaimer">
-    Die auf dieser Website enthaltenen Angaben und Informationen dienen ausschließlich zu Informationszwecken. Alle Projektdaten sind vorläufig und werden mit Kenntnisnahme von ipm Immobilien-Projekt-Management bestätigt. Irrtümer vorbehalten.
-  </div>
-</footer>
-
-<script>
-/* ---- Custom Cursor ---- */
-const cur = document.getElementById('cursor');
-const dot = document.getElementById('cursor-dot');
-let mx=0,my=0,cx=0,cy=0;
-document.addEventListener('mousemove', e=>{
-  mx=e.clientX; my=e.clientY;
-  dot.style.left=mx+'px'; dot.style.top=my+'px';
-});
-(function loop(){
-  cx+=(mx-cx)*0.1; cy+=(my-cy)*0.1;
-  cur.style.left=cx+'px'; cur.style.top=cy+'px';
-  requestAnimationFrame(loop);
-})();
-document.querySelectorAll('a,button').forEach(el=>{
-  el.addEventListener('mouseenter',()=>cur.classList.add('is-hover'));
-  el.addEventListener('mouseleave',()=>cur.classList.remove('is-hover'));
-});
-
-/* ---- Nav: transparent → sticky on scroll ---- */
-const nav = document.getElementById('topnav');
-window.addEventListener('scroll', ()=>{
-  nav.classList.toggle('is-scrolled', window.scrollY > 60);
-}, {passive:true});
-
-/* ---- Video: hold last frame; replay when hero scrolls back into view ---- */
-const vid = document.querySelector('.hero-video');
-if (vid) {
-  vid.addEventListener('ended', () => vid.pause());
-
-  const heroSection = document.querySelector('.hero');
-  const vidObs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting && vid.paused && vid.ended) {
-        vid.currentTime = 0;
-        vid.play();
-      }
-    });
-  }, { threshold: 0.3 });
-  if (heroSection) vidObs.observe(heroSection);
-}
-
-/* ---- Button Sweep — action fires after animation ---- */
-document.querySelectorAll('a.btn-hero, a.nav-cta, a.btn-case, button.btn-hero, button.nav-cta').forEach(function(btn) {
-  btn.addEventListener('click', function(e) {
-    var isLink = btn.tagName === 'A';
-    if (isLink && (e.metaKey||e.ctrlKey||e.shiftKey||e.button===1||btn.target==='_blank')) return;
-    if (btn._acting) return;
-    e.preventDefault(); btn._acting = true; btn.classList.add('is-activating');
-    var finish = function() {
-      var href = isLink ? btn.getAttribute('href') : null;
-      if (isLink) {
-        if (href && href.charAt(0) === '#') {
-          if (href.length > 1) { var t = document.querySelector(href); if (t) t.scrollIntoView({behavior:'smooth'}); }
-          btn._acting = false; btn.classList.remove('is-activating');
-        } else if (href) { window.location.href = href; }
-        else { btn._acting = false; btn.classList.remove('is-activating'); }
-      } else {
-        var f = btn.closest('form'); btn._acting = false; btn.classList.remove('is-activating');
-        if (f) { f.requestSubmit ? f.requestSubmit(btn) : f.submit(); }
-      }
-    };
-    var done = false, once = function(){ if(!done){ done=true; finish(); } };
-    btn.addEventListener('animationend', once, {once:true});
-    setTimeout(once, 600);
-  });
-});
-
-/* ---- Counter animation (2026 → 2003) ---- */
-function animateCounter(el, start, end, duration) {
-  var dir = end > start ? 1 : -1;
-  var range = Math.abs(end - start);
-  var startTime = null;
-  function step(now) {
-    if (!startTime) startTime = now;
-    var elapsed = now - startTime;
-    var progress = Math.min(elapsed / duration, 1);
-    var eased = 1 - Math.pow(1 - progress, 2);
-    el.textContent = Math.round(start + dir * range * eased);
-    if (progress < 1) requestAnimationFrame(step);
-    else el.textContent = end;
-  }
-  requestAnimationFrame(step);
-}
-
-/* ---- Stagger: Stats + Insight-Cards ---- */
-document.querySelectorAll('.stat-item').forEach(function(item, i) {
-  item.style.transitionDelay = (i * 0.16) + 's';
-});
-document.querySelectorAll('.insight-card').forEach(function(item, i) {
-  item.style.transitionDelay = (i * 0.14) + 's';
-});
-
-var yearTriggered = false;
-var obs = new IntersectionObserver(function(entries) {
-  entries.forEach(function(e) {
-    if (e.isIntersecting) {
-      e.target.classList.add('in');
-      obs.unobserve(e.target);
-      /* Trigger year countdown when the year stat item reveals */
-      var yearEl = e.target.querySelector('#stat-year');
-      if (yearEl && !yearTriggered) {
-        yearTriggered = true;
-        var s = parseInt(yearEl.dataset.start, 10);
-        var end = parseInt(yearEl.dataset.end, 10);
-        setTimeout(function() { animateCounter(yearEl, s, end, 1100); }, 180);
-      }
-    }
-  });
-}, {threshold: 0.15});
-document.querySelectorAll('.reveal').forEach(function(el) { obs.observe(el); });
-
-/* ---- Case Study Carousel ---- */
-(function() {
-  var track = document.getElementById('caseTrack');
-  var dots  = document.querySelectorAll('.case-dot');
-  if (!track) return;
-  var total = 3, current = 0, timer;
-
-  function goTo(idx) {
-    current = (idx + total) % total;
-    track.style.transform = 'translateX(-' + (current * 100) + '%)';
-    dots.forEach(function(d, i) {
-      d.classList.toggle('is-active', i === current);
-    });
-  }
-
-  function startAuto() {
-    clearInterval(timer);
-    timer = setInterval(function() { goTo(current + 1); }, 3200);
-  }
-
-  dots.forEach(function(d) {
-    d.addEventListener('click', function() {
-      goTo(parseInt(d.dataset.idx, 10));
-      startAuto();
-    });
-  });
-
-  /* Pause on hover, resume on leave */
-  var section = document.getElementById('projekte');
-  if (section) {
-    section.addEventListener('mouseenter', function() { clearInterval(timer); });
-    section.addEventListener('mouseleave', startAuto);
-  }
-
-  startAuto();
-})();
-</script>
+  <!-- GreenSock: GSAP + ScrollTrigger + ScrollSmoother (weicher Scroll) -->
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.13.0/dist/ScrollSmoother.min.js"></script>
+  <script src="/assets/js/main.js"></script>
 </body>
 </html>
