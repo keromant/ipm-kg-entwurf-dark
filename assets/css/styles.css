@@ -337,24 +337,6 @@ section[id] { scroll-margin-top: calc(var(--header-h) + 16px); }
 .info-row p { margin-top: 2px; }
 
 /* ================================================================
-   STICKY „JETZT ANRUFEN" (mobil prominent) — Logo-Telefonbanner
-================================================================ */
-.sticky-call {
-  position: fixed; z-index: 60; left: 50%; bottom: 18px; transform: translateX(-50%);
-  display: none; align-items: center; gap: var(--space-3);
-  background: var(--call-navy); color: #fff;
-  padding: 10px 22px 10px 12px; border-radius: var(--radius-pill);
-  box-shadow: 0 12px 30px -8px rgba(8,24,58,.6);
-  font-family: var(--font-accent); font-weight: 800; font-size: var(--text-md);
-}
-.sticky-call .ico {
-  width: 44px; height: 44px; border-radius: 50%; background: var(--call-green);
-  display: grid; place-items: center; color: #fff; flex: 0 0 auto;
-}
-.sticky-call .ico svg { width: 22px; height: 22px; }
-.sticky-call small { display: block; font-weight: 700; font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.7); }
-
-/* ================================================================
    FOOTER
 ================================================================ */
 .site-footer { background: var(--bg-navy); color: rgba(255,255,255,.72); padding-block: var(--space-16) var(--space-8); margin-top: var(--space-24); }
@@ -410,9 +392,8 @@ section[id] { scroll-margin-top: calc(var(--header-h) + 16px); }
   .nav-list a { padding: 14px 12px; font-size: var(--text-md); }
   .nav-list a::after { display: none; }
   .has-sub > .sub { position: static; opacity: 1; visibility: visible; transform: none; box-shadow: none; border: 0; padding-left: var(--space-4); }
-  .header-cta .header-phone { display: none; }        /* Sticky-Call übernimmt mobil */
-  .header-cta .btn { display: none; }                  /* CTA liegt in der Mobil-Nav */
-  .sticky-call { display: inline-flex; }
+  .header-cta .header-phone { display: none; }        /* Telefonnummer-Text spart mobil Platz */
+  .header-cta .btn { padding: 11px 18px; font-size: var(--text-sm); }  /* kompakter CTA im Header */
 
   .grid-2, .grid-3, .grid-4, .split-entries { grid-template-columns: 1fr; }
   .trust, .stats, .steps { grid-template-columns: 1fr; }
